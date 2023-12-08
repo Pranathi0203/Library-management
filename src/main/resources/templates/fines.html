@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+
+<head>
+    <meta charset="ISO-8859-1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
+            integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"
+            integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Fines</title>
+</head>
+
+<style>
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+    }
+
+    li {
+        float: left;
+    }
+
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    li a:hover {
+        background-color: #111;
+    }
+</style>
+
+<body>
+<h2 align="center">Fines</h2>
+<div class="container mt-5">
+    <form th:action="@{/searchfines}" method="get">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="Enter Card Id" size="50">
+        <button type="submit" class="btn btn-info">Search</button>
+        <button type="submit" class="btn btn-info">Reset</button>
+    </form>
+    <form id="check-inform" th:action="@{/payfines}" method="post" th:object="${finesRequest}" enctype="application/json">
+        <!--<input type="hidden" name="loanId" id="loanId" th:value="${loanId}"/>-->
+        <input type="hidden" name="cardId" id="cardId" th:value="${cardId}"/>
+<!--        <input type="hidden" name="isbns" id="isbns" th:value="${isbns}"/>-->
+    </form>
+    <table class="table table-bordered table-sm mt-2">
+        <tbody>
+        <tr>
+            <td> Borrower Id:</td>
+            <td th:text="${response?.borrowerId}"></td>
+        </tr>
+        <tr>
+            <td> Borrower Name:</td>
+            <td th:text="${response?.borrowerName}"></td>
+        </tr>
+        <tr>
+            <td> Total Fine:</td>
+            <td th:text="${response?.totalFine}"></td>
+        </tr>
+
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-info fixed-button" id="checkin-button"
+            onclick="submitCheckIn()">Pay Fines</button>
+
+</div>
+
+
+
+<script>
+    function submitCheckIn() {
+        var cardId = "[[${response?.borrowerId}]]";
+        alert('Confirmation of payment '+ cardId + ' is successful');
+        document.getElementById("cardId").value=cardId;
+        document.getElementById("check-inform").submit();
+    }
+</script>
+</body>
+
+</html>

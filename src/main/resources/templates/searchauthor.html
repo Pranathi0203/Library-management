@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="www.thymeleaf.org">
+<html xmlns:th="www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="ISO-8859-1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
@@ -8,34 +8,184 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>SEARCH</title>
 </head>
-<body>
+
+<style>
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+    }
+
+    li ,form{
+        float: left;
+    }
+
+    li a, li form {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    li a:hover {
+        background-color: #111;
+    }
+
+    .fixed-button {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+
+    }
+
+     .modal {
+         display: none;
+         position: fixed;
+         z-index: 1;
+         padding-top: 100px;
+         left: 0;
+         top: 0;
+         width: 100%;
+         height: 100%;
+         overflow: auto;
+         background-color: rgb(0, 0, 0);
+         background-color: rgba(0, 0, 0, 0.4);
+     }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 40%;
+    }
+
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover, .close:focus {
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+<body onload="showFinesResponse()">
+<div class="container">
+    <ul>
+        <li><form th:action="@{/checkoutpage}" method="get">
+            <button type="submit" class="btn btn-info">Check Out</button></form></li>
+        <li><form th:action="@{/checkinpage}" method="get">
+            <button type="submit" class="btn btn-info">Check In</button></form></li>
+        <li><form th:action="@{/addborrowerpage}" method="get">
+            <button type="submit" class="btn btn-info">Add Borrower</button>
+        </form></li>
+        <li><form th:action="@{/updateFines}" method="get">
+            <button type="submit" class="btn btn-info">Update Fines</button></form></li>
+        <li><form th:action="@{/finespage}" method="get">
+            <button type="submit" class="btn btn-info">Fines</button></form></li>
+        <li><form th:action="@{/historypage}" method="get">
+            <button type="submit" class="btn btn-info">Borrower History</button></form></li>
+    </ul>
+</div>
 <div class="container mt-5">
-    <h2 align="center">Search in Thymeleaf Template</h2>
+    <h2 align="center">Library Management</h2>
     <form th:action="@{/search}" method="get">
-        <input type="text" name="name" th:value="${keyword}"  placeholder="Find by Author Name" size="50" >
-        <button type="submit" class="btn btn-info" >Search</button>
-        <button type="submit" class="btn btn-info" >Reset</button>
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="Find by Author Name/Isbn/Book Title" size="50">
+        <button type="submit" class="btn btn-info">Search</button>
+        <button type="submit" class="btn btn-info">Reset</button>
     </form>
-    <table class="table table-bordered table-sm mt-2">
+    <table id="searchtable" class="table table-bordered table-sm mt-2">
         <thead>
         <tr>
-            <th></th>
-            <th>Id</th>
+            <th>Isbn</th>
+            <th>Title</th>
             <th>Author Name</th>
+            <th>Availability</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="l : ${authorsList}" th:field="${l}">
-            <td th:text="${lStat.index+1}"></td>
-            <td th:text="${l.authorId}"></td>
-            <td th:text="${l.name}"></td>
-            <td>
-                <!-- <a th:href="@{/update/{id}(id=${l.id})}" ><i class="fa fa-edit" ></i></a>
-                 <a th:href="@{/delete/{id}(id=${l.id})}" ><i class="fa fa-remove"></i></a>-->
-            </td>
+        <tr th:each="l : ${responses}" th:field="${l}">
+            <td th:text="${l.isbn}"></td>
+            <td th:text="${l.title}"></td>
+            <td th:text="${l.authorNames}"></td>
+            <span th:if="${l.isUnavailable}">
+                <td>Not Available</td>
+                <td></td>
+            </span>
+            <span th:unless="${l.isUnavailable}">
+                <td>Available</td>
+                <td>
+                    <input type="checkbox" class="row-checkbox" th:id="${'checkbox-' + l.isbn}" />
+                </td>
+            </span>
         </tr>
         </tbody>
     </table>
+    <button type="submit" class="btn btn-info fixed-button" id="checkout-button"  style="display:none" onclick="checkoutSelected()" attr="disabled=${l.isUnAvailable} ? '' : 'disabled'">Checkout</button>
+
 </div>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form th:action="@{/checkout}" method="post" th:object="${checkoutBookRequest}" enctype="application/json">
+            <input type="hidden" name="isbns" id="isbns" th:value="${isbns}"/>
+            <label>ENTER BORROWER ID :</label>
+            <input type="text" name="cardId" th:value="${cardId}"/>
+            <button type="submit" name="submit">Borrow</button>
+        </form>
+    </div>
+</div>
+
 </body>
+
+<script>
+
+
+    const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+    const checkoutButton = document.getElementById("checkout-button");
+
+    rowCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", updateCheckoutButton);
+    });
+    function showFinesResponse() {
+        var finesSucess = "[[${successMsg}]]";
+        if (finesSucess !== '') {
+            alert(finesSucess);
+        }
+    }
+    function updateCheckoutButton() {
+        // const atLeastOneChecked = Array.from(rowCheckboxes).some(checkbox => checkbox.checked);
+        // checkoutButton.style.display = atLeastOneChecked ? "block" : "none";
+        const selectedCheckboxes = Array.from(rowCheckboxes).filter(checkbox => checkbox.checked);
+        const atLeastOneChecked = selectedCheckboxes.length > 0;
+        const moreThanThreeChecked = selectedCheckboxes.length > 3;
+        checkoutButton.style.display = atLeastOneChecked ? "block" : "none";
+        checkoutButton.disabled = moreThanThreeChecked;
+    }
+
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function() {
+        document.getElementById('myModal').style.display = "none";
+    }
+    function checkoutSelected() {
+        const selectedIsbns = Array.from(rowCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.id.replace("checkbox-", ""));
+        if(selectedIsbns.length > 0){
+            document.getElementById("isbns").value=selectedIsbns;
+            document.getElementById('myModal').style.display="block";
+            console.log(document.getElementById("isbns").value);
+        }
+
+    }
+</script>
 </html>
+
+

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {font-family: Arial, Helvetica, sans-serif;}
+    * {box-sizing: border-box;}
+
+    input[type=text], select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      resize: vertical;
+    }
+
+    input[type=submit] {
+      background-color: #04AA6D;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+
+    .container {
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h3>Borrower Details</h3>
+
+<div class="container">
+  <form th:action="@{/addborrower}" method="post" th:object="${borrower}" enctype="application/json">
+    <label for="fname">First Name</label>
+    <input type="text" id="fname" th:value="${fname}" name="fname" placeholder="Your name..">
+
+    <label for="lname">Last Name</label>
+    <input type="text" id="lname" th:value="${lname}" name="lname" placeholder="Your last name..">
+
+    <label for="ssn">Ssn</label>
+    <input type="text" id="ssn" th:value="${ssn}" name="ssn" placeholder="Your SSN">
+
+    <label for="address">Address</label>
+    <input type="text" id="address" th:value="${address}" name="address" placeholder="Your Address">
+
+    <label for="city">City</label>
+    <input type="text" id="city" th:value="${city}" name="city" placeholder="City">
+
+    <label for="state">State</label>
+    <input type="text" id="state" th:value="${state}" name="state" placeholder="State">
+
+    <label for="phone">Phone</label>
+    <input type="text" id="phone" th:value="${phone}" name="phone" placeholder="Phone Number">
+
+    <button type="submit" id="btn" class="btn btn-info" >Submit</button>
+  </form>
+
+  <tr th:each="l : ${res}" th:field="${l}">
+  <td th:text="${l.card_Id}"></td>
+  </tr>
+</div>
+
+</body>
+
+<script>
+  // const btn = document.getElementById("btn");
+  // const fname=document.getElementById("fname");
+  // const lname=document.getElementById("lname");
+  // const ssn=document.getElementById("ssn");
+  // const address=document.getElementById("address");
+  // const city=document.getElementById("city");
+  // const state=document.getElementById("state");
+  // const phone=document.getElementById("phone");
+
+  /*btn.addEventListener("click", () => {
+    console.log("hi");
+    fetch('http://localhost:8080/addborrower', {
+      method: 'POST',
+      body: JSON.stringify({
+        cardId: "id00001",
+        fname: fname,
+        lname: lname,
+        ssn:ssn,
+        address:address,
+        city:city,
+        state:state,
+        phone:phone
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      }
+    })
+            .then(function(response){
+              console.log(response);
+              return response.json()})
+            .then(function(data)
+            {console.log(data)
+            }).catch(error => console.error('Error:', error));
+  });*/
+</script>
+</html>

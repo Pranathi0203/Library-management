@@ -9,8 +9,7 @@ import java.util.List;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author,Long> {
-    @Query(nativeQuery = true, value="select * from Authors where Author_id= :id")
+    @Query(nativeQuery = true, value="select * from Authors where author_id= :id")
     public List<Author> getAllAuthorsById(Long id);
     public List<Author> findAuthorsByNameContains(String name);
-
 }

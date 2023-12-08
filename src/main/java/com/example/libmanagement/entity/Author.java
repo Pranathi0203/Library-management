@@ -1,8 +1,6 @@
 package com.example.libmanagement.entity;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +14,4 @@ public class Author {
     @Id
     private Long authorId;
     private String name;
-
-
 }

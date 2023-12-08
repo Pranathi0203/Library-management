@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+
+<head>
+  <meta charset="ISO-8859-1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
+          integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"
+          integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <title>CheckIn</title>
+</head>
+
+<style>
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  li {
+    float: left;
+  }
+
+  li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  li a:hover {
+    background-color: #111;
+  }
+</style>
+
+<body>
+<h2 align="center"> Check In</h2>
+<div class="container mt-5">
+  <form th:action="@{/searchcheckin}" method="get">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="Find By Isbn/Card Id/Borrower Name" size="50">
+    <button type="submit" class="btn btn-info">Search</button>
+    <button type="submit" class="btn btn-info">Reset</button>
+  </form>
+  <form id="check-inform" th:action="@{/checkin}" method="post" th:object="${checkinBookRequest}" enctype="application/json">
+    <input type="hidden" name="loanId" id="loanId" th:value="${loanId}"/>
+<!--    <input type="hidden" name="isbns" id="isbns" th:value="${isbns}"/>-->
+    <!--<input type="hidden" name="cardId" id="cardId" th:value="${cardId}"/>-->
+  </form>
+  <table class="table table-bordered table-sm mt-2">
+    <thead>
+    <tr>
+      <th>Loan Id</th>
+      <th>Isbn</th>
+      <th>Title</th>
+      <th>Borrower Card Id</th>
+      <th>Borrower Name</th>
+      <th>Check out Date</th>
+      <th>Due Date</th>
+      <!--<th>Check In Date</th>-->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="l : ${responses}" th:field="${l}">
+      <td th:text="${l.loanId}"></td>
+      <td th:text="${l.isbn}"></td>
+      <td th:text="${l.title}"></td>
+      <td th:text="${l.borrowerId}"></td>
+      <td th:text="${l.borrowerName}"></td>
+      <td th:text="${l.borrowedDate}"></td>
+      <td th:text="${l.dueDate}"></td>
+      <!--<td th:text="${l.checkInDate}"></td>-->
+      <td>
+        <input type="checkbox" class="row-checkbox" th:value="${l.loanId}"
+               onchange="updateCheckInButton(this)" />
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <button type="button" class="btn btn-info fixed-button" id="checkin-button" style="display: none"
+          onclick="submitCheckIn()">Check In</button>
+
+</div>
+
+
+
+<script>
+  const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+  //let isbns = [];
+  let loanId=[]
+  function updateCheckInButton(elm) {
+    let elmValue = elm.value;
+    //let cardId = elmValue[1];
+    if (elm.checked) {
+      loanId.push(elmValue);
+    } else {
+      let index = loanId.indexOf(elmValue);
+      if (index !== -1) {
+        loanId.splice(index, elmValue);
+      }
+
+    }
+      // const checkboxes = document.querySelectorAll(".row-checkbox:checked");
+      // let borrowerId = '';
+      // let selectedBooks = [];
+      // checkboxes.forEach(checkbox => {
+      //   const checkboxIdParts = checkbox.id.split('-');
+      //   const isbn = checkboxIdParts[1];
+      //   borrowerId = checkboxIdParts[2];
+      //   console.log("isbn "+isbn);
+      //   selectedBooks.push(isbn);
+      // });
+      // console.log(selectedBooks[0]);
+      document.getElementById(("loanId")).value=loanId;
+      //document.getElementById("cardId").value = cardId;
+      //document.getElementById("isbns").value = isbns;
+
+      const checkInButton = document.getElementById("checkin-button");
+      checkInButton.style.display = loanId.length > 0 ? "block" : "none";
+      //console.log("Selected Books:", selectedBooks);
+  }
+
+  function submitCheckIn() {
+    document.getElementById("check-inform").submit();
+  }
+</script>
+</body>
+
+</html>

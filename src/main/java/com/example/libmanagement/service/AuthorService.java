@@ -17,8 +17,6 @@ public class AuthorService {
     public List<Author> getAuthor(String name){
         List<Author> authorsList=authorRepository.findAuthorsByNameContains(name);
         return authorsList;
-
-
     }
 
 }
